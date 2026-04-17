@@ -66,8 +66,8 @@ export default function Dashboard() {
   produtos.forEach((p: any[]) => {
     const sku = p[3];
     const estoqueAtual = estoquesAtuais[sku] || 0;
-    const precoCusto = parseFloat(p[6]) || 0;
-    const precoVenda = parseFloat(p[7]) || 0;
+    const precoCusto = parseFloat((p[6] || '0').replace(',', '.')) || 0;
+    const precoVenda = parseFloat((p[7] || '0').replace(',', '.')) || 0;
 
     totalValorEstoque += estoqueAtual * precoCusto;
     totalLucroPotencial += estoqueAtual * precoVenda;
