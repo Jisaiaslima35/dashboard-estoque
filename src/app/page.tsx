@@ -1,8 +1,5 @@
 // @ts-nocheck
 import { google } from 'googleapis';
-...
-
-import { google } from 'googleapis';
 
 const SPREADSHEET_ID = '1LOWtzmQSuluue7_778MHEg3Ac6iajbLZdH0KAPI4mHk';
 
@@ -30,25 +27,20 @@ async function getGoogleSheetsData() {
   };
 }
 
-function calcularEstoqueProdutos(produtos: any[], movimentacoes: any[]) {
-  const headers = produtos[0] || [];
+function calcularEstoqueProdutos(produtos, movimentacoes) {
   const data = produtos.slice(1);
-  
-  const estoques: any = {};
+  const estoques = {};
   data.forEach(row => {
     const sku = row[3];
     const qtd = parseInt(row[4]) || 0;
     estoques[sku] = qtd;
   });
 
-  const movHeaders = movimentacoes[0] || [];
   const movData = movimentacoes.slice(1);
-  
   movData.forEach(row => {
     const produtoId = row[1];
     const tipo = row[2];
     const qtd = parseInt(row[3]) || 0;
-    
     if (tipo === 'entrada') {
       estoques[produtoId] = (estoques[produtoId] || 0) + qtd;
     } else if (tipo === 'saida') {
@@ -65,7 +57,7 @@ export default async function Dashboard() {
 
   try {
     data = await getGoogleSheetsData();
-  } catch (e: any) {
+  } catch (e) {
     error = e.message;
   }
 
@@ -75,7 +67,7 @@ export default async function Dashboard() {
   const estoquesAtuais = calcularEstoqueProdutos(data.produtos, data.movimentacoes);
 
   const totalProdutos = produtos.length;
-  const produtosEmFalta = produtos.filter((p: any) => {
+  const produtosEmFalta = produtos.filter((p) => {
     const sku = p[3];
     return (estoquesAtuais[sku] || 0) <= (parseInt(p[5]) || 0);
   }).length;
@@ -117,7 +109,7 @@ export default async function Dashboard() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  {headers.map((header: string, i: number) => (
+                  {headers.map((header, i) => (
                     <th key={i} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       {header}
                     </th>
@@ -128,24 +120,20 @@ export default async function Dashboard() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {produtos.map((produto: any, i: number) => {
+                {produtos.map((produto, i) => {
                   const sku = produto[3];
                   const estoqueAtual = estoquesAtuais[sku] || 0;
                   const estoqueMin = parseInt(produto[5]) || 0;
                   const isLow = estoqueAtual <= estoqueMin;
-                  
                   return (
                     <tr key={i} className={isLow ? 'bg-red-50' : ''}>
-                      {produto.map((cell: any, j: number) => (
+                      {produto.map((cell, j) => (
                         <td key={j} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {cell}
                         </td>
                       ))}
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${
-                        isLow ? 'text-red-600' : 'text-green-600'
-                      }`}>
-                        {estoqueAtual}
-                        {isLow && ' ⚠️'}
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${isLow ? 'text-red-600' : 'text-green-600'}`}>
+                        {estoqueAtual}{isLow && ' ⚠️'}
                       </td>
                     </tr>
                   );
@@ -171,13 +159,11 @@ export default async function Dashboard() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {movimentacoes.slice(-10).reverse().map((mov: any, i: number) => (
+                {movimentacoes.slice(-10).reverse().map((mov, i) => (
                   <tr key={i}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{mov[0]}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{mov[1]}</td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${
-                      mov[2] === 'entrada' ? 'text-green-600' : 'text-red-600'
-                    }`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${mov[2] === 'entrada' ? 'text-green-600' : 'text-red-600'}`}>
                       {mov[2] === 'entrada' ? '📥 ENTRADA' : '📤 SAÍDA'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{mov[3]}</td>
