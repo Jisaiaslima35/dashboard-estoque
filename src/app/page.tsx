@@ -51,6 +51,8 @@ function calcularEstoqueProdutos(produtos, movimentacoes) {
   return estoques;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function Dashboard() {
   let data: { produtos: any[][]; movimentacoes: any[][] } = { produtos: [], movimentacoes: [] };
   let error = null;
