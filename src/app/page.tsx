@@ -52,7 +52,7 @@ function calcularEstoqueProdutos(produtos, movimentacoes) {
 }
 
 export default async function Dashboard() {
-  let data = { produtos: [], movimentacoes: [] };
+  let data: { produtos: any[][]; movimentacoes: any[][] } = { produtos: [], movimentacoes: [] };
   let error = null;
 
   try {
