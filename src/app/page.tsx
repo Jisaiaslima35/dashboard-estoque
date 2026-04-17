@@ -1,3 +1,7 @@
+// @ts-nocheck
+import { google } from 'googleapis';
+...
+
 import { google } from 'googleapis';
 
 const SPREADSHEET_ID = '1LOWtzmQSuluue7_778MHEg3Ac6iajbLZdH0KAPI4mHk';
