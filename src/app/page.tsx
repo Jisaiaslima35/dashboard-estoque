@@ -17,7 +17,6 @@ function calcularEstoqueProdutos(produtos: any[][], movimentacoes: any[][]) {
     const produtoId = row[1];
     const tipo = row[2];
     const qtd = parseInt(row[3]) || 0;
-
     if (tipo === 'entrada') {
       estoques[produtoId] = (estoques[produtoId] || 0) + qtd;
     } else if (tipo === 'saida') {
@@ -68,7 +67,6 @@ export default function Dashboard() {
     const estoqueAtual = estoquesAtuais[sku] || 0;
     const precoCusto = parseFloat((p[6] || '0').replace(',', '.')) || 0;
     const precoVenda = parseFloat((p[7] || '0').replace(',', '.')) || 0;
-
     totalValorEstoque += estoqueAtual * precoCusto;
     totalLucroPotencial += estoqueAtual * precoVenda;
   });
@@ -84,74 +82,77 @@ export default function Dashboard() {
         {/* CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <div className="bg-white p-4 rounded shadow">
-            <p>Total Produtos</p>
+            <p className="text-gray-500 text-sm">Total Produtos</p>
             <h2 className="text-2xl font-bold">{totalProdutos}</h2>
           </div>
           <div className="bg-white p-4 rounded shadow">
-            <p>Estoque Baixo</p>
-            <h2 className="text-2xl text-red-500">{produtosEmFalta}</h2>
+            <p className="text-gray-500 text-sm">Estoque Baixo</p>
+            <h2 className="text-2xl font-bold text-red-500">{produtosEmFalta}</h2>
           </div>
           <div className="bg-white p-4 rounded shadow">
-            <p>Movimentações</p>
-            <h2 className="text-2xl text-green-500">{movimentacoes.length}</h2>
+            <p className="text-gray-500 text-sm">Movimentações</p>
+            <h2 className="text-2xl font-bold text-green-500">{movimentacoes.length}</h2>
           </div>
           <div className="bg-white p-4 rounded shadow">
-            <p>Valor Estoque</p>
-            <h2 className="text-xl text-purple-600">
-              R$ {totalValorEstoque.toFixed(2)}
-            </h2>
+            <p className="text-gray-500 text-sm">Valor em Estoque</p>
+            <h2 className="text-xl font-bold text-purple-600">R$ {totalValorEstoque.toFixed(2)}</h2>
           </div>
           <div className="bg-white p-4 rounded shadow">
-            <p>Valor de Venda</p>
-            <h2 className="text-xl text-green-600">
-              R$ {totalLucroPotencial.toFixed(2)}
-            </h2>
+            <p className="text-gray-500 text-sm">Valor de Venda</p>
+            <h2 className="text-xl font-bold text-green-600">R$ {totalLucroPotencial.toFixed(2)}</h2>
           </div>
         </div>
 
         {/* TABELA PRODUTOS */}
-        <div className="bg-white rounded shadow mb-8 overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr>
-                {headers.map((h: string, i: number) => (
-                  <th key={i} className="p-2 text-left">{h}</th>
-                ))}
-                <th>Estoque</th>
-                <th>Valor Estoque</th>
-                <th>Valor Venda</th>
-              </tr>
-            </thead>
-            <tbody>
-              {produtos.map((p: any[], i: number) => {
-                const sku = p[3];
-                const estoqueAtual = estoquesAtuais[sku] || 0;
-                const estoqueMin = parseInt(p[5]) || 0;
-                const precoCusto = parseFloat(p[6]) || 0;
-                const precoVenda = parseFloat(p[7]) || 0;
-                const valorEstoque = estoqueAtual * precoCusto;
-                const valorVenda = estoqueAtual * precoVenda;
-                const baixo = estoqueAtual <= estoqueMin;
+        <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
+          <div className="px-6 py-4 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-800">📋 Produtos</h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  {headers.map((h: string, i: number) => (
+                    <th key={i} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">{h}</th>
+                  ))}
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estoque Atual</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor em Estoque</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor de Venda</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {produtos.map((p: any[], i: number) => {
+                  const sku = p[3];
+                  const estoqueAtual = estoquesAtuais[sku] || 0;
+                  const estoqueMin = parseInt(p[5]) || 0;
+                  const precoCusto = parseFloat((p[6] || '0').replace(',', '.')) || 0;
+                  const precoVenda = parseFloat((p[7] || '0').replace(',', '.')) || 0;
+                  const valorEstoque = estoqueAtual * precoCusto;
+                  const valorVenda = estoqueAtual * precoVenda;
+                  const baixo = estoqueAtual <= estoqueMin;
 
-                return (
-                  <tr key={i} className={baixo ? 'bg-red-100' : ''}>
-                    {p.map((c: any, j: number) => (
-                      <td key={j} className="p-2">{c}</td>
-                    ))}
-                    <td className="p-2 font-bold">
-                      {estoqueAtual} {baixo && '⚠️'}
-                    </td>
-                    <td className="p-2">
-                      R$ {valorEstoque.toFixed(2)}
-                    </td>
-                    <td className="p-2 text-green-600 font-bold">
-                      R$ {valorVenda.toFixed(2)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                  return (
+                    <tr key={i} className={baixo ? 'bg-red-50' : ''}>
+                      {p.map((c: any, j: number) => (
+                        <td key={j} className="px-4 py-3 text-sm text-gray-900">{c}</td>
+                      ))}
+                      <td className="px-4 py-3 text-sm font-bold">
+                        <span className={baixo ? 'text-red-600' : 'text-green-600'}>
+                          {estoqueAtual} {baixo && '⚠️'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-purple-600 font-bold">
+                        R$ {valorEstoque.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-green-600 font-bold">
+                        R$ {valorVenda.toFixed(2)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* TABELA MOVIMENTAÇÕES */}
@@ -165,31 +166,29 @@ export default function Dashboard() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs text-gray-500">Data</th>
-                  <th className="px-6 py-3 text-left text-xs text-gray-500">Produto</th>
-                  <th className="px-6 py-3 text-left text-xs text-gray-500">Tipo</th>
-                  <th className="px-6 py-3 text-left text-xs text-gray-500">Qtd</th>
-                  <th className="px-6 py-3 text-left text-xs text-gray-500">Obs</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produto</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Qtd</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Obs</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-200">
                 {movimentacoes.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-4 text-gray-400">
+                    <td colSpan={5} className="text-center py-6 text-gray-400">
                       Nenhuma movimentação encontrada
                     </td>
                   </tr>
                 ) : (
                   movimentacoes.slice(-10).reverse().map((mov: any[], i: number) => (
                     <tr key={i}>
-                      <td className="px-6 py-4 text-sm">{mov[0]}</td>
-                      <td className="px-6 py-4 text-sm">{mov[1]}</td>
-                      <td className={`px-6 py-4 text-sm font-bold ${
-                        mov[2] === 'entrada' ? 'text-green-600' : 'text-red-600'
-                      }`}>
+                      <td className="px-6 py-4 text-sm text-gray-900">{mov[0]}</td>
+                      <td className="px-6 py-4 text-sm text-gray-900">{mov[1]}</td>
+                      <td className={`px-6 py-4 text-sm font-bold ${mov[2] === 'entrada' ? 'text-green-600' : 'text-red-600'}`}>
                         {mov[2] === 'entrada' ? '📥 Entrada' : '📤 Saída'}
                       </td>
-                      <td className="px-6 py-4 text-sm font-bold">{mov[3]}</td>
+                      <td className="px-6 py-4 text-sm font-bold text-gray-900">{mov[3]}</td>
                       <td className="px-6 py-4 text-sm text-gray-500">{mov[4]}</td>
                     </tr>
                   ))
@@ -198,6 +197,10 @@ export default function Dashboard() {
             </table>
           </div>
         </div>
+
+        <p className="text-center text-gray-400 text-sm mt-8">
+          Atualização automática a cada 5 segundos 🚀
+        </p>
 
       </div>
     </div>
