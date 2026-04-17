@@ -44,11 +44,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     carregar();
-
-    const interval = setInterval(() => {
-      carregar();
-    }, 5000); // atualiza a cada 5 segundos
-
+    const interval = setInterval(carregar, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -64,125 +60,142 @@ export default function Dashboard() {
     return (estoquesAtuais[sku] || 0) <= (parseInt(p[5]) || 0);
   }).length;
 
-  // Calcular totais de valor e lucro
   let totalValorEstoque = 0;
   let totalLucroPotencial = 0;
+
   produtos.forEach((p: any[]) => {
     const sku = p[3];
     const estoqueAtual = estoquesAtuais[sku] || 0;
     const precoCusto = parseFloat(p[6]) || 0;
     const precoVenda = parseFloat(p[7]) || 0;
+
     totalValorEstoque += estoqueAtual * precoCusto;
-    totalLucroPotencial += estoqueAtual * (precoVenda - precoCusto);
+    totalLucroPotencial += estoqueAtual * precoVenda;
   });
 
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">
-          📦 Dashboard de Estoque
-        </h1>
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <p className="font-bold">Erro ao conectar API:</p>
-            <p>{error}</p>
-          </div>
-        )}
+        <h1 className="text-3xl font-bold mb-8">📦 Dashboard de Estoque</h1>
 
+        {error && <p className="text-red-500">{error}</p>}
+
+        {/* CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-gray-500 text-sm font-medium">Total de Produtos</h2>
-            <p className="text-3xl font-bold text-blue-600">{totalProdutos}</p>
+
+          <div className="bg-white p-4 rounded shadow">
+            <p>Total Produtos</p>
+            <h2 className="text-2xl font-bold">{totalProdutos}</h2>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-gray-500 text-sm font-medium">Em Falta / Estoque Baixo</h2>
-            <p className="text-3xl font-bold text-red-500">{produtosEmFalta}</p>
+          <div className="bg-white p-4 rounded shadow">
+            <p>Estoque Baixo</p>
+            <h2 className="text-2xl text-red-500">{produtosEmFalta}</h2>
           </div>
 
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-gray-500 text-sm font-medium">Últimas Movimentações</h2>
-            <p className="text-3xl font-bold text-green-500">{movimentacoes.length}</p>
+          <div className="bg-white p-4 rounded shadow">
+            <p>Movimentações</p>
+            <h2 className="text-2xl text-green-500">{movimentacoes.length}</h2>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-gray-500 text-sm font-medium">Valor Total em Estoque</h2>
-            <p className="text-2xl font-bold text-purple-600">R$ {totalValorEstoque.toFixed(2).replace('.', ',')}</p>
+
+          <div className="bg-white p-4 rounded shadow">
+            <p>Valor Estoque</p>
+            <h2 className="text-xl text-purple-600">
+              R$ {totalValorEstoque.toFixed(2)}
+            </h2>
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-gray-500 text-sm font-medium">Lucro Potencial</h2>
-            <p className="text-2xl font-bold text-green-600">R$ {totalLucroPotencial.toFixed(2).replace('.', ',')}</p>
+
+          <div className="bg-white p-4 rounded shadow">
+            <p>Valor de Venda</p>
+            <h2 className="text-xl text-green-600">
+              R$ {totalLucroPotencial.toFixed(2)}
+            </h2>
           </div>
+
         </div>
 
-        <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">📋 Produtos</h2>
-          </div>
+        {/* TABELA PRODUTOS */}
+        <div className="bg-white rounded shadow mb-8 overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr>
+                {headers.map((h: string, i: number) => (
+                  <th key={i} className="p-2 text-left">{h}</th>
+                ))}
+                <th>Estoque</th>
+                <th>Valor Estoque</th>
+                <th>Valor Venda</th>
+              </tr>
+            </thead>
 
-          <div className="overflow-x-auto">
+            <tbody>
+              {produtos.map((p: any[], i: number) => {
+                const sku = p[3];
+                const estoqueAtual = estoquesAtuais[sku] || 0;
+                const estoqueMin = parseInt(p[5]) || 0;
 
-          <table className="min-w-full divide-y divide-gray-200">
-  <thead className="bg-gray-50">
-    <tr>
-      {headers.map((header: string, i: number) => (
-        <th key={i} className="px-6 py-3 text-left text-xs text-gray-500 uppercase">
-          {header}
-        </th>
-      ))}
+                const precoCusto = parseFloat(p[6]) || 0;
+                const precoVenda = parseFloat(p[7]) || 0;
 
-      <th className="px-6 py-3 text-left text-xs text-gray-500">Estoque Atual</th>
-      <th className="px-6 py-3 text-left text-xs text-gray-500">Valor Estoque (R$)</th>
-      <th className="px-6 py-3 text-left text-xs text-gray-500">Lucro Potencial (R$)</th>
-    </tr>
-  </thead>
+                const valorEstoque = estoqueAtual * precoCusto;
+                const valorVenda = estoqueAtual * precoVenda;
 
-  <tbody className="bg-white divide-y divide-gray-200">
-    {produtos.map((produto: any[], i: number) => {
-      const sku = produto[3];
+                const baixo = estoqueAtual <= estoqueMin;
 
-      const estoqueAtual = estoquesAtuais[sku] || 0;
-      const estoqueMin = parseInt(produto[5]) || 0;
+                return (
+                  <tr key={i} className={baixo ? 'bg-red-100' : ''}>
+                    {p.map((c: any, j: number) => (
+                      <td key={j} className="p-2">{c}</td>
+                    ))}
 
-      const precoCusto = parseFloat(produto[6]) || 0;
-      const precoVenda = parseFloat(produto[7]) || 0;
+                    <td className="p-2 font-bold">
+                      {estoqueAtual} {baixo && '⚠️'}
+                    </td>
 
-      const valorEstoque = estoqueAtual * precoCusto;
-      const lucroTotal = estoqueAtual * (precoVenda - precoCusto);
+                    <td className="p-2">
+                      R$ {valorEstoque.toFixed(2)}
+                    </td>
 
-      const isLow = estoqueAtual <= estoqueMin;
-
-      return (
-        <tr key={i} className={isLow ? 'bg-red-50' : ''}>
-          {produto.map((cell: any, j: number) => (
-            <td key={j} className="px-6 py-4 text-sm text-gray-900">
-              {cell}
-            </td>
-          ))}
-
-          <td className={`px-6 py-4 text-sm font-bold ${isLow ? 'text-red-600' : 'text-green-600'}`}>
-            {estoqueAtual} {isLow && '⚠️'}
-          </td>
-
-          <td className="px-6 py-4 text-sm">
-            R$ {valorEstoque.toFixed(2)}
-          </td>
-
-          <td className="px-6 py-4 text-sm font-bold text-green-600">
-            R$ {lucroTotal.toFixed(2)}
-          </td>
-        </tr>
-      );
-    })}
-  </tbody>
-</table>
-            
-          </div>
+                    <td className="p-2 text-green-600 font-bold">
+                      R$ {valorVenda.toFixed(2)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
 
-        <p className="text-center text-gray-400 text-sm mt-8">
-          Atualização automática a cada 5 segundos 🚀
-        </p>
+        {/* TABELA MOVIMENTAÇÕES (VOLTOU) */}
+        <div className="bg-white rounded shadow overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Produto</th>
+                <th>Tipo</th>
+                <th>Qtd</th>
+                <th>Obs</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {movimentacoes.slice(-10).reverse().map((m: any[], i: number) => (
+                <tr key={i}>
+                  <td className="p-2">{m[0]}</td>
+                  <td className="p-2">{m[1]}</td>
+                  <td className="p-2 font-bold">
+                    {m[2] === 'entrada' ? '📥 Entrada' : '📤 Saída'}
+                  </td>
+                  <td className="p-2">{m[3]}</td>
+                  <td className="p-2">{m[4]}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
       </div>
     </div>
   );
