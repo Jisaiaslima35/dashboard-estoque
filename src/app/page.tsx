@@ -64,6 +64,18 @@ export default function Dashboard() {
     return (estoquesAtuais[sku] || 0) <= (parseInt(p[5]) || 0);
   }).length;
 
+  // Calcular totais de valor e lucro
+  let totalValorEstoque = 0;
+  let totalLucroPotencial = 0;
+  produtos.forEach((p) => {
+    const sku = p[3];
+    const estoqueAtual = estoquesAtuais[sku] || 0;
+    const precoCusto = parseFloat(p[6]) || 0;
+    const precoVenda = parseFloat(p[7]) || 0;
+    totalValorEstoque += estoqueAtual * precoCusto;
+    totalLucroPotencial += estoqueAtual * (precoVenda - precoCusto);
+  });
+
   return (
     <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
@@ -78,7 +90,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-gray-500 text-sm font-medium">Total de Produtos</h2>
             <p className="text-3xl font-bold text-blue-600">{totalProdutos}</p>
@@ -92,6 +104,14 @@ export default function Dashboard() {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-gray-500 text-sm font-medium">Últimas Movimentações</h2>
             <p className="text-3xl font-bold text-green-500">{movimentacoes.length}</p>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-gray-500 text-sm font-medium">Valor Total em Estoque</h2>
+            <p className="text-2xl font-bold text-purple-600">R$ {totalValorEstoque.toFixed(2).replace('.', ',')}</p>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-gray-500 text-sm font-medium">Lucro Potencial</h2>
+            <p className="text-2xl font-bold text-green-600">R$ {totalLucroPotencial.toFixed(2).replace('.', ',')}</p>
           </div>
         </div>
 
@@ -109,9 +129,9 @@ export default function Dashboard() {
                       {header}
                     </th>
                   ))}
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                    Estoque Atual
-                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estoque Atual</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Valor Estoque (R$)</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Lucro Potencial (R$)</th>
                 </tr>
               </thead>
 
@@ -120,6 +140,11 @@ export default function Dashboard() {
                   const sku = produto[3];
                   const estoqueAtual = estoquesAtuais[sku] || 0;
                   const estoqueMin = parseInt(produto[5]) || 0;
+                  const precoCusto = parseFloat(produto[6]) || 0;
+                  const precoVenda = parseFloat(produto[7]) || 0;
+                  const valorEstoque = estoqueAtual * precoCusto;
+                  const lucroUnitario = precoVenda - precoCusto;
+                  const lucroTotal = estoqueAtual * lucroUnitario;
                   const isLow = estoqueAtual <= estoqueMin;
 
                   return (
@@ -132,6 +157,12 @@ export default function Dashboard() {
 
                       <td className={`px-6 py-4 text-sm font-bold ${isLow ? 'text-red-600' : 'text-green-600'}`}>
                         {estoqueAtual} {isLow && '⚠️'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-purple-600 font-medium">
+                        R$ {valorEstoque.toFixed(2).replace('.', ',')}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-green-600">
+                        R$ {lucroTotal.toFixed(2).replace('.', ',')}
                       </td>
                     </tr>
                   );
