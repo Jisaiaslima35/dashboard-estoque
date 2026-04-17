@@ -21,8 +21,8 @@ async function getGoogleSheetsData() {
   });
 
   return {
-    produtos: response.valueRanges?.[0]?.values || [],
-    movimentacoes: response.valueRanges?.[1]?.values || [],
+    produtos: response.data.valueRanges?.[0]?.values || [],
+    movimentacoes: response.data.valueRanges?.[1]?.values || [],
   };
 }
 
@@ -32,18 +32,17 @@ function calcularEstoqueProdutos(produtos: any[], movimentacoes: any[]) {
   
   const estoques: any = {};
   data.forEach(row => {
-    const sku = row[3]; // SKU column
-    const qtd = parseInt(row[4]) || 0; // quantidade
+    const sku = row[3];
+    const qtd = parseInt(row[4]) || 0;
     estoques[sku] = qtd;
   });
 
-  // Apply movements
   const movHeaders = movimentacoes[0] || [];
   const movData = movimentacoes.slice(1);
   
   movData.forEach(row => {
-    const produtoId = row[1]; // produto_id
-    const tipo = row[2]; // tipo
+    const produtoId = row[1];
+    const tipo = row[2];
     const qtd = parseInt(row[3]) || 0;
     
     if (tipo === 'entrada') {
@@ -91,7 +90,6 @@ export default async function Dashboard() {
           </div>
         )}
 
-        {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-gray-500 text-sm font-medium">Total de Produtos</h2>
@@ -107,7 +105,6 @@ export default async function Dashboard() {
           </div>
         </div>
 
-        {/* Tabela de Produtos */}
         <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800">📋 Produtos</h2>
@@ -154,7 +151,6 @@ export default async function Dashboard() {
           </div>
         </div>
 
-        {/* Últimas Movimentações */}
         <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800">📊 Últimas Movimentações</h2>
