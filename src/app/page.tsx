@@ -1,35 +1,11 @@
-// @ts-nocheck
-import { google } from 'googleapis';
+'use client'
 
-const SPREADSHEET_ID = '1LOWtzmQSuluue7_778MHEg3Ac6iajbLZdH0KAPI4mHk';
+import { useEffect, useState } from 'react';
 
-async function getGoogleSheetsData() {
-  const credentials = {
-    client_email: process.env.GOOGLE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  };
-
-  const auth = new google.auth.GoogleAuth({
-    credentials,
-    scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
-  });
-
-  const sheets = google.sheets({ version: 'v4', auth });
-
-  const response = await sheets.spreadsheets.values.batchGet({
-    spreadsheetId: SPREADSHEET_ID,
-    ranges: ['Página1!A1:H100', 'movimentacoes!A1:E100'],
-  });
-
-  return {
-    produtos: response.data.valueRanges?.[0]?.values || [],
-    movimentacoes: response.data.valueRanges?.[1]?.values || [],
-  };
-}
-
-function calcularEstoqueProdutos(produtos, movimentacoes) {
+function calcularEstoqueProdutos(produtos: any[][], movimentacoes: any[][]) {
   const data = produtos.slice(1);
-  const estoques = {};
+  const estoques: any = {};
+
   data.forEach(row => {
     const sku = row[3];
     const qtd = parseInt(row[4]) || 0;
@@ -41,6 +17,7 @@ function calcularEstoqueProdutos(produtos, movimentacoes) {
     const produtoId = row[1];
     const tipo = row[2];
     const qtd = parseInt(row[3]) || 0;
+
     if (tipo === 'entrada') {
       estoques[produtoId] = (estoques[produtoId] || 0) + qtd;
     } else if (tipo === 'saida') {
@@ -51,17 +28,29 @@ function calcularEstoqueProdutos(produtos, movimentacoes) {
   return estoques;
 }
 
-export const dynamic = 'force-dynamic';
+export default function Dashboard() {
+  const [data, setData] = useState<any>({ produtos: [], movimentacoes: [] });
+  const [error, setError] = useState<string | null>(null);
 
-export default async function Dashboard() {
-  let data: { produtos: any[][]; movimentacoes: any[][] } = { produtos: [], movimentacoes: [] };
-  let error = null;
-
-  try {
-    data = await getGoogleSheetsData();
-  } catch (e) {
-    error = e.message;
+  async function carregar() {
+    try {
+      const res = await fetch('/api/estoque');
+      const json = await res.json();
+      setData(json);
+    } catch (e: any) {
+      setError(e.message);
+    }
   }
+
+  useEffect(() => {
+    carregar();
+
+    const interval = setInterval(() => {
+      carregar();
+    }, 5000); // atualiza a cada 5 segundos
+
+    return () => clearInterval(interval);
+  }, []);
 
   const headers = data.produtos[0] || [];
   const produtos = data.produtos.slice(1);
@@ -69,7 +58,8 @@ export default async function Dashboard() {
   const estoquesAtuais = calcularEstoqueProdutos(data.produtos, data.movimentacoes);
 
   const totalProdutos = produtos.length;
-  const produtosEmFalta = produtos.filter((p) => {
+
+  const produtosEmFalta = produtos.filter((p: any[]) => {
     const sku = p[3];
     return (estoquesAtuais[sku] || 0) <= (parseInt(p[5]) || 0);
   }).length;
@@ -83,7 +73,7 @@ export default async function Dashboard() {
 
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            <p className="font-bold">Erro ao conectar planilha:</p>
+            <p className="font-bold">Erro ao conectar API:</p>
             <p>{error}</p>
           </div>
         )}
@@ -93,10 +83,12 @@ export default async function Dashboard() {
             <h2 className="text-gray-500 text-sm font-medium">Total de Produtos</h2>
             <p className="text-3xl font-bold text-blue-600">{totalProdutos}</p>
           </div>
+
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-gray-500 text-sm font-medium">Em Falta / Estoque Baixo</h2>
             <p className="text-3xl font-bold text-red-500">{produtosEmFalta}</p>
           </div>
+
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-gray-500 text-sm font-medium">Últimas Movimentações</h2>
             <p className="text-3xl font-bold text-green-500">{movimentacoes.length}</p>
@@ -107,11 +99,12 @@ export default async function Dashboard() {
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800">📋 Produtos</h2>
           </div>
+
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  {headers.map((header, i) => (
+                  {headers.map((header: string, i: number) => (
                     <th key={i} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                       {header}
                     </th>
@@ -121,21 +114,24 @@ export default async function Dashboard() {
                   </th>
                 </tr>
               </thead>
+
               <tbody className="bg-white divide-y divide-gray-200">
-                {produtos.map((produto, i) => {
+                {produtos.map((produto: any[], i: number) => {
                   const sku = produto[3];
                   const estoqueAtual = estoquesAtuais[sku] || 0;
                   const estoqueMin = parseInt(produto[5]) || 0;
                   const isLow = estoqueAtual <= estoqueMin;
+
                   return (
                     <tr key={i} className={isLow ? 'bg-red-50' : ''}>
-                      {produto.map((cell, j) => (
-                        <td key={j} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {produto.map((cell: any, j: number) => (
+                        <td key={j} className="px-6 py-4 text-sm text-gray-900">
                           {cell}
                         </td>
                       ))}
-                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${isLow ? 'text-red-600' : 'text-green-600'}`}>
-                        {estoqueAtual}{isLow && ' ⚠️'}
+
+                      <td className={`px-6 py-4 text-sm font-bold ${isLow ? 'text-red-600' : 'text-green-600'}`}>
+                        {estoqueAtual} {isLow && '⚠️'}
                       </td>
                     </tr>
                   );
@@ -145,40 +141,8 @@ export default async function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">📊 Últimas Movimentações</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Produto ID</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantidade</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Observação</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {movimentacoes.slice(-10).reverse().map((mov, i) => (
-                  <tr key={i}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{mov[0]}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{mov[1]}</td>
-                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-bold ${mov[2] === 'entrada' ? 'text-green-600' : 'text-red-600'}`}>
-                      {mov[2] === 'entrada' ? '📥 ENTRADA' : '📤 SAÍDA'}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">{mov[3]}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{mov[4]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
         <p className="text-center text-gray-400 text-sm mt-8">
-          Dashboard atualizado em tempo real via Google Sheets API
+          Atualização automática a cada 5 segundos 🚀
         </p>
       </div>
     </div>
