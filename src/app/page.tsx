@@ -67,7 +67,7 @@ export default function Dashboard() {
   // Calcular totais de valor e lucro
   let totalValorEstoque = 0;
   let totalLucroPotencial = 0;
-  produtos.forEach((p) => {
+  produtos.forEach((p: any[]) => {
     const sku = p[3];
     const estoqueAtual = estoquesAtuais[sku] || 0;
     const precoCusto = parseFloat(p[6]) || 0;
