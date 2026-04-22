@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react';
+import Header from './components/Header';
 
 function calcularEstoqueProdutos(produtos: any[][], movimentacoes: any[][]) {
   const data = produtos.slice(1);
@@ -72,38 +73,35 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-100">
+      <Header />
+      <div className="max-w-7xl mx-auto p-8">
 
-        <h1 className="text-3xl font-bold mb-8">📦 Dashboard de Estoque</h1>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
 
-        {error && <p className="text-red-500">{error}</p>}
-
-        {/* CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-8">
-          <div className="bg-white p-4 rounded shadow">
+          <div className="bg-white p-4 rounded-lg shadow">
             <p className="text-gray-500 text-sm">Total Produtos</p>
             <h2 className="text-2xl font-bold">{totalProdutos}</h2>
           </div>
-          <div className="bg-white p-4 rounded shadow">
+          <div className="bg-white p-4 rounded-lg shadow">
             <p className="text-gray-500 text-sm">Estoque Baixo</p>
             <h2 className="text-2xl font-bold text-red-500">{produtosEmFalta}</h2>
           </div>
-          <div className="bg-white p-4 rounded shadow">
+          <div className="bg-white p-4 rounded-lg shadow">
             <p className="text-gray-500 text-sm">Movimentações</p>
             <h2 className="text-2xl font-bold text-green-500">{movimentacoes.length}</h2>
           </div>
-          <div className="bg-white p-4 rounded shadow">
+          <div className="bg-white p-4 rounded-lg shadow">
             <p className="text-gray-500 text-sm">Valor em Estoque</p>
             <h2 className="text-xl font-bold text-purple-600">R$ {totalValorEstoque.toFixed(2)}</h2>
           </div>
-          <div className="bg-white p-4 rounded shadow">
+          <div className="bg-white p-4 rounded-lg shadow">
             <p className="text-gray-500 text-sm">Valor de Venda</p>
             <h2 className="text-xl font-bold text-green-600">R$ {totalLucroPotencial.toFixed(2)}</h2>
           </div>
         </div>
 
-        {/* TABELA PRODUTOS */}
         <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-semibold text-gray-800">📋 Produtos</h2>
@@ -141,12 +139,8 @@ export default function Dashboard() {
                           {estoqueAtual} {baixo && '⚠️'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-purple-600 font-bold">
-                        R$ {valorEstoque.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-green-600 font-bold">
-                        R$ {valorVenda.toFixed(2)}
-                      </td>
+                      <td className="px-4 py-3 text-sm text-purple-600 font-bold">R$ {valorEstoque.toFixed(2)}</td>
+                      <td className="px-4 py-3 text-sm text-green-600 font-bold">R$ {valorVenda.toFixed(2)}</td>
                     </tr>
                   );
                 })}
@@ -155,12 +149,9 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* TABELA MOVIMENTAÇÕES */}
-        <div className="bg-white rounded-lg shadow overflow-hidden mt-8">
+        <div className="bg-white rounded-lg shadow overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-800">
-              📊 Movimentações em Tempo Real
-            </h2>
+            <h2 className="text-xl font-semibold text-gray-800">📊 Movimentações em Tempo Real</h2>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -176,9 +167,7 @@ export default function Dashboard() {
               <tbody className="divide-y divide-gray-200">
                 {movimentacoes.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="text-center py-6 text-gray-400">
-                      Nenhuma movimentação encontrada
-                    </td>
+                    <td colSpan={5} className="text-center py-6 text-gray-400">Nenhuma movimentação encontrada</td>
                   </tr>
                 ) : (
                   movimentacoes.slice(-10).reverse().map((mov: any[], i: number) => (
@@ -201,8 +190,6 @@ export default function Dashboard() {
         <p className="text-center text-gray-400 text-sm mt-8">
           Atualização automática a cada 5 segundos 🚀
         </p>
-
-      </div>
       </div>
     </div>
   );
