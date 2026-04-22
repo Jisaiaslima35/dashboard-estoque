@@ -1,94 +1,51 @@
 'use client'
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
 
-  const menuItems = [
-    { label: 'Início', href: 'https://dashboardestoque.vercel.app/' },
-    { label: 'Cadastro', href: 'https://dashboard-estoque-ruby.vercel.app/cadastro' },
-    { label: 'Falar com Jarvis', href: 'https://wa.me/5584921629373', external: true }
+  const links = [
+    { href: '/', label: '🏠 Início' },
+    { href: '/cadastro', label: '➕ Cadastro' },
+    { href: 'https://wa.me/5584921629373', label: '🤖 Falar com Jarvis', external: true },
   ];
 
   return (
-    <header className="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="https://dashboardestoque.vercel.app/" className="text-xl font-bold text-white hover:text-blue-400 transition">
-            📦 Estoque
-          </Link>
-
-          {/* Desktop Menu */}
-          <nav className="hidden md:flex items-center space-x-6">
-            {menuItems.map((item, i) => (
-              item.external ? (
-                <a
-                  key={i}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white hover:text-blue-400 transition text-sm font-medium"
-                >
-                  {item.label}
-                </a>
-              ) : (
-                <Link
-                  key={i}
-                  href={item.href}
-                  className="text-white hover:text-blue-400 transition text-sm font-medium"
-                >
-                  {item.label}
-                </Link>
-              )
-            ))}
-          </nav>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="md:hidden text-white p-2"
-            onClick={() => setMenuOpen(!menuOpen)}
-            aria-label="Menu"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {menuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
+    <header className="bg-white border-b border-gray-200 shadow-sm">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <span className="text-xl font-bold text-gray-800">📦 EstoqueJS</span>
+          <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">ao vivo</span>
         </div>
-
-        {/* Mobile Menu Dropdown */}
-        {menuOpen && (
-          <nav className="md:hidden pb-4 space-y-2">
-            {menuItems.map((item, i) => (
-              item.external ? (
-                <a
-                  key={i}
-                  href={item.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-white hover:text-blue-400 transition text-sm font-medium py-2"
-                >
-                  {item.label}
-                </a>
-              ) : (
-                <Link
-                  key={i}
-                  href={item.href}
-                  className="block text-white hover:text-blue-400 transition text-sm font-medium py-2"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {item.label}
-                </Link>
-              )
-            ))}
-          </nav>
-        )}
+        <nav className="flex items-center gap-2">
+          {links.map((link) =>
+            link.external ? (
+              
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-green-500 hover:bg-green-600 text-white transition"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                  pathname === link.href
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                {link.label}
+              </Link>
+            )
+          )}
+        </nav>
       </div>
     </header>
   );
