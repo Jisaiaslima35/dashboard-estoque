@@ -10,7 +10,7 @@ export default function Header() {
     <header className="bg-white border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="text-xl font-bold text-gray-800">📦 EstoqueJS</span>
+          <span className="text-xl font-bold text-gray-800">EstoqueJS</span>
           <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">ao vivo</span>
         </div>
         <nav className="flex items-center gap-2">
@@ -20,7 +20,7 @@ export default function Header() {
               pathname === '/' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            🏠 Início
+            Inicio
           </Link>
           <Link
             href="/cadastro"
@@ -28,7 +28,7 @@ export default function Header() {
               pathname === '/cadastro' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            ➕ Cadastro
+            Cadastro
           </Link>
           
             href="https://wa.me/5584921629373"
@@ -36,7 +36,7 @@ export default function Header() {
             rel="noopener noreferrer"
             className="px-4 py-2 rounded-lg text-sm font-medium bg-green-500 hover:bg-green-600 text-white transition"
           >
-            🤖 Falar com Jarvis
+            Falar com Jarvis
           </a>
         </nav>
       </div>
