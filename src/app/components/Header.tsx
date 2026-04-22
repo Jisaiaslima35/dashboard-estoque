@@ -16,17 +16,13 @@ export default function Header() {
         <nav className="flex items-center gap-2">
           <Link
             href="/"
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-              pathname === '/' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
-            }`}
+            className={pathname === '/' ? 'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white' : 'px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100'}
           >
             Inicio
           </Link>
           <Link
             href="/cadastro"
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-              pathname === '/cadastro' ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'
-            }`}
+            className={pathname === '/cadastro' ? 'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white' : 'px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100'}
           >
             Cadastro
           </Link>
