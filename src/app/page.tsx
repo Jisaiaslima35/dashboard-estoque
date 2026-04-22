@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react';
-import Header from './components/Header';
 
 function calcularEstoqueProdutos(produtos: any[][], movimentacoes: any[][]) {
   const data = produtos.slice(1);
@@ -73,9 +72,7 @@ export default function Dashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <Header />
-      <div className="p-8">
+    <div className="min-h-screen bg-gray-100 p-8">
       <div className="max-w-7xl mx-auto">
 
         <h1 className="text-3xl font-bold mb-8">📦 Dashboard de Estoque</h1>
@@ -205,6 +202,7 @@ export default function Dashboard() {
           Atualização automática a cada 5 segundos 🚀
         </p>
 
+      </div>
       </div>
     </div>
   );
