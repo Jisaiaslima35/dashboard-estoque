@@ -16,22 +16,19 @@ export default function Header() {
         <nav className="flex items-center gap-2">
           <Link
             href="/"
-            className={pathname === '/' ? 'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white' : 'px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100'}
-          >
+            className={pathname === '/' ? 'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white' : 'px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100'}>
             Inicio
           </Link>
           <Link
             href="/cadastro"
-            className={pathname === '/cadastro' ? 'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white' : 'px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100'}
-          >
+            className={pathname === '/cadastro' ? 'px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white' : 'px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100'}>
             Cadastro
           </Link>
           
-            href="https://wa.me/5584921629373"
+            <a href="https://wa.me/5584921629373"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 rounded-lg text-sm font-medium bg-green-500 hover:bg-green-600 text-white transition"
-          >
+            className="px-4 py-2 rounded-lg text-sm font-medium bg-green-500 hover:bg-green-600 text-white transition">
             Falar com Jarvis
           </a>
         </nav>
