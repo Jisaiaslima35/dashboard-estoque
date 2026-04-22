@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react';
+import Header from '../components/Header';
 
 const WEBHOOK = 'https://n8n.automacaojs.club/webhook/cadastro-produto';
 
@@ -55,7 +56,9 @@ export default function Cadastro() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-gray-100">
+      <Header />
+      <div className="p-8">
       <div className="max-w-xl mx-auto">
 
         <h1 className="text-2xl font-bold text-gray-800 mb-2">📦 Cadastro de Produto</h1>
